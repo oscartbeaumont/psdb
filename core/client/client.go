@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -31,6 +32,13 @@ const (
 	maxMessageSize = 100 * 1024 * 1024
 )
 
+func format_addr(addr string) string {
+	if !strings.Contains(addr, "://") {
+		addr = "https://" + addr
+	}
+	return addr
+}
+
 func New[T any](
 	addr string,
 	fn func(connect.HTTPClient, string, ...connect.ClientOption) T,
@@ -50,7 +58,7 @@ func New[T any](
 		cOpts = append(cOpts, cfg.extraClientOptions...)
 	}
 
-	return fn(cfg.httpClient, "https://"+addr, cOpts...)
+	return fn(cfg.httpClient, format_addr(addr), cOpts...)
 }
 
 type ClientPool[T any] struct {
@@ -73,7 +81,7 @@ func (p *ClientPool[T]) Get(addr string) T {
 
 	// create a new one outside a lock, worst case, we create multiple, last one wins
 	// and the others are GC'd
-	client = p.fn(p.cfg.httpClient, "https://"+addr, p.clientOptions...)
+	client = p.fn(p.cfg.httpClient, format_addr(addr), p.clientOptions...)
 
 	// lock the map to store the client
 	p.poolMu.Lock()
