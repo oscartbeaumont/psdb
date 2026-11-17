@@ -8,7 +8,7 @@ require (
 	github.com/planetscale/vitess-types v0.0.0-20230808182149-da48f87540fa
 	github.com/segmentio/asm v1.2.0
 	github.com/stretchr/testify v1.7.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
